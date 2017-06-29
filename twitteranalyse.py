@@ -8,11 +8,14 @@
 
 import tweepy 
 import sqlite3
-import sched, time 
+import re
+from textblob import TextBlob
+from textblob.sentiments import NaiveBayesAnalyzer
 
 #Connect with the Database, if you haven't any database look at the SQLite 3 Tutorial how to create one using Python
 conn = sqlite3.connect('Trump.db')
 x = conn.cursor()
+
 
 # Go to http://dev.twitter.com and create an app. 
 # The consumer key and secret as well as the access_token and secret will be generated for you after you register with Twitter Developers
@@ -29,16 +32,45 @@ api = tweepy.API(auth)
 
 class CustomStreamListener(tweepy.StreamListener):
     def __init__(self, api):
-        self.api = api
-        super(tweepy.StreamListener, self).__init__()
+				self.api = api
+				super(tweepy.StreamListener, self).__init__()
+				self.count = 0
+				self.errorcount = 0
 
-
+        
+	#Where the Magic happens. Function that starts with every incomming tweet (status)
     def on_status(self, status):
-		if "RT @" not in status.text:
-			x.execute("""INSERT INTO Twitter(ID, Text, User, Language) VALUES(?,?,?,?)""",
-			(status.id, status.text, status.user.id, status.lang))
-			conn.commit()   
-		
+			try:
+				if "RT @" not in status.text:
+					
+					hashtag = ""
+					try:
+						for h in status.entities["hashtags"]:
+							hashtag += h["text"] +" "
+					except:
+						print "No Hashtags used"
+					
+					text = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", str(status.text.encode("utf-8"))).split())
+					analysis = TextBlob(text)
+					sentiment = ""
+					
+					if analysis.sentiment.polarity > 0:
+						sentiment = "pos"
+					elif analysis.sentiment.polarity == 0:
+						sentiment = "neu"
+					else:
+						sentiment = "neg"
+					
+					
+					x.execute("""INSERT INTO Twitter(ID, TimeStamp, User, Text, Hashtags, Language, Sentiment) VALUES(?,?,?,?,?,?,?)""",
+					(status.id, status.created_at, status.user.id, status.text,hashtag, status.lang, sentiment))
+					conn.commit()
+					
+					self.count += 1	
+					print self.count, self.errorcount
+			except IncompleteRead:
+				self.errorcount += 1
+			
     def on_error(self, status_code):
         print >> sys.stderr, 'Encountered error with status code:', status_code
         return True
@@ -48,13 +80,18 @@ class CustomStreamListener(tweepy.StreamListener):
         return True
         
 #Initialise the Stream
-sapi = tweepy.streaming.Stream(auth, CustomStreamListener(api))		
+
 
 #Keywords that we want our stream filter for
 keyword_list = ['Trump', 'Obama']
 
 #Function that takes the keywords as a list and runs the stream
 def startstream(keywords):
-	sapi.filter(track=keywords)
+	sapi = tweepy.streaming.Stream(auth, CustomStreamListener(api))		
+	while True:
+		try:
+			sapi.filter(track=keywords)
+		except:
+			continue
 
 startstream(keyword_list)
