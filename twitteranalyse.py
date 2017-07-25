@@ -9,12 +9,17 @@
 import tweepy 
 import sqlite3
 import re
+import sys
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 
-#Connect with the Database, if you haven't any database look at the SQLite 3 Tutorial how to create one using Python
-conn = sqlite3.connect('Trump.db')
+
+
+#Connects with the Database, if you haven't any database look at the SQLite 3 Tutorial how to create one using Python
+	
+conn = sqlite3.connect('Brexit.db')		
 x = conn.cursor()
+
 
 
 # Go to http://dev.twitter.com and create an app. 
@@ -35,20 +40,26 @@ class CustomStreamListener(tweepy.StreamListener):
 				self.api = api
 				super(tweepy.StreamListener, self).__init__()
 				self.count = 0
-				self.errorcount = 0
 
         
 	#Where the Magic happens. Function that starts with every incomming tweet (status)
     def on_status(self, status):
-			try:
+			
 				if "RT @" not in status.text:
 					
 					hashtag = ""
+					urls= ""
+					mentions = ""
+					
 					try:
 						for h in status.entities["hashtags"]:
 							hashtag += h["text"] +" "
+						for l in status.entities["urls"]:
+							urls += l["expanded_url"] + " "
+						for m in status.entities["user_mentions"]:
+							mentions += m["id_str"] + " "  
 					except:
-						print "No Hashtags used"
+						pass
 					
 					text = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", str(status.text.encode("utf-8"))).split())
 					analysis = TextBlob(text)
@@ -62,14 +73,12 @@ class CustomStreamListener(tweepy.StreamListener):
 						sentiment = "neg"
 					
 					
-					x.execute("""INSERT INTO Twitter(ID, TimeStamp, User, Text, Hashtags, Language, Sentiment) VALUES(?,?,?,?,?,?,?)""",
-					(status.id, status.created_at, status.user.id, status.text,hashtag, status.lang, sentiment))
+					x.execute("""INSERT INTO Twitter(ID, TimeStamp, User, Text, Hashtags, Links, Mentions, Language, Sentiment, AnswerToTweet, AnswerToUser) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+					(status.id, status.created_at, status.user.id, status.text, hashtag, urls, mentions, status.lang, sentiment,status.in_reply_to_status_id, status.in_reply_to_user_id))
 					conn.commit()
 					
-					self.count += 1	
-					print self.count, self.errorcount
-			except IncompleteRead:
-				self.errorcount += 1
+					self.count += 1
+					print self.count
 			
     def on_error(self, status_code):
         print >> sys.stderr, 'Encountered error with status code:', status_code
@@ -83,7 +92,10 @@ class CustomStreamListener(tweepy.StreamListener):
 
 
 #Keywords that we want our stream filter for
-keyword_list = ['Trump', 'Obama']
+keyword_list_germanparties = ['CDU', 'CSU', 'SPD', 'FDP', 'Die Gruenen', 'Die Linke', 'AFD', 'NDP']
+keyword_list_news = ['news', 'breaking', 'eilmeldung']
+keyword_list_trump = ['trump', 'obama', 'potus', 'maga']
+keyword_list_brexit = ['brexit', 'theresa may']
 
 #Function that takes the keywords as a list and runs the stream
 def startstream(keywords):
@@ -94,4 +106,4 @@ def startstream(keywords):
 		except:
 			continue
 
-startstream(keyword_list)
+startstream(keyword_list_brexit)
