@@ -1,6 +1,10 @@
 A project by Nils Tecklenborg 
+
 Heinrich-Heine Universität Düsseldorf
+
 Distributed under the GNU General Public Licence v3
+
+Latest Changes 12.08.2017
 
 Knowledge Technology and Twitter 1.0
 
