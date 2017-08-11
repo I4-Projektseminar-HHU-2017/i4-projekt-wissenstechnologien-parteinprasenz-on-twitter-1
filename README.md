@@ -57,7 +57,7 @@ Either insert one of the given keyword lists into the startstream method or crea
 
 Dataminig
 
-Dataming offers a range of functions that analyze the databases filled with twitteranalyse before.
+Dataming offers a range of functions that analyze the databases filled by twitteranalyse before.
 
 1. Connect to the correct database
 
