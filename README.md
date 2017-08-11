@@ -9,6 +9,7 @@ The first programm "Twitteranalyse" collects Tweets from any topic of interest a
 The second program "Datamining" offers various functions to analyze the collected Tweets, using SQLite statements, the matplotlib for some graphics and WordCloud for some TagClouds.
 
 Twitteranalyse
+
 At first some words to the inspiration for this program. 
 This Code is inspired by a Stackoverflow thread and the answer of User Balazs https://stackoverflow.com/questions/37398609/save-data-to-sqlite-from-tweepy
 
