@@ -17,9 +17,12 @@ This Code is inspired by a Stackoverflow thread and the answer of User Balazs ht
 1. Register as a Twitter developer
 
 You need to register as a Twitter developer to get the necessary Access Tokens for the API. This can be done here: http://dev.twitter.com 
+
 The Tokens will be generated after the successful registration. You need to copy and paste them into the Code. 
 The connection with the Twitter API is handled by the tweepy library.
+
 Tweepy Documenation: https://github.com/tweepy/tweepy
+
 Twitter API Documenation: https://dev.twitter.com/streaming/reference/post/statuses/filter
 
 2. Connect to the correct database
@@ -54,7 +57,7 @@ Either insert one of the given keyword lists into the startstream method or crea
 
 Dataminig
 
-Dataming offers a range of functions that analyze the databases filled with twitteranalyse before.
+Dataming offers a range of functions that analyze the databases filled by twitteranalyse before.
 
 1. Connect to the correct database
 
