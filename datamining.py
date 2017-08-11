@@ -1,6 +1,9 @@
 #-*- coding: utf-8 -*-
+
+# Tweepy module written by Josh Roselin, documentation at https://github.com/tweepy/tweepy
 # Word Cloud https://github.com/amueller/word_cloud/blob/master/README.
 # SQLite3 Tutorial from http://www.python-kurs.eu/sql_python.php
+# NLTK http://www.nltk.org/
 
 import sqlite3
 import tweepy
@@ -13,10 +16,10 @@ from nltk.tokenize import RegexpTokenizer
 connection = sqlite3.connect("News.db")
 cursor = connection.cursor()
 
-consumer_key = "dDg2wPt249fB87CI8SBDXOpet"
-consumer_secret =  "YaNJ4iRphKxke41VpohtzVCOr5C55ljYtEbF1vAF93f80thvsl"
-access_token = "2859636691-JyxcWeoUrjZc26L1tRL6QQquijNaLDgQ0Wfm0Jt"
-access_token_secret = "ZXpYWICZrKZHIs1dBZboZrdBmMSrla0bxqaJRV0X79xj0"
+consumer_key = "Insert Consumer Key"
+consumer_secret =  "Insert Consumer Secret"
+access_token = "Inser Access Token"
+access_token_secret = "Insert Access Token Secret"
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -24,6 +27,10 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 #Die am häufigsten auftauchenden Wörter in einer Tagcloud, 0 Text Analyse, 1 Hashtags
+#If you choose 1 for hashtag analysis add the following part to the SQL statement
+#WHERE Hashtags != ""
+#Tweets without Hashtag have an empty string in this field of their database entry, with this part added we only get the tweets with hashtags as a result
+
 def cloud(c, choise):
 	c.execute("""SELECT Text, Hashtags
 					FROM Twitter""")
@@ -112,15 +119,11 @@ def most_answered_user(c):
 	result = c.fetchall()
 	usernames = []
 	counts = []
-	percentage = []
 	
 	for i in range (0,10):
 		counts.append(result[i][0])
 		usernames.append(api.get_user(result[i][1]).screen_name)
 		
-	for i in range (0,10):
-		percentage.append(float(result[i][0])/float(sum(counts))*100)
-	
 	labels = usernames
 	sizes = counts
 	
