@@ -3,7 +3,6 @@
 # SQLite3 Tutorial from http://www.python-kurs.eu/sql_python.php
 
 import sqlite3
-import re
 import tweepy
 import nltk
 import operator
@@ -11,7 +10,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud, STOPWORDS
 from nltk.tokenize import RegexpTokenizer
 
-connection = sqlite3.connect("GermanParties.db")
+connection = sqlite3.connect("News.db")
 cursor = connection.cursor()
 
 consumer_key = "dDg2wPt249fB87CI8SBDXOpet"
@@ -27,26 +26,34 @@ api = tweepy.API(auth)
 #Die am häufigsten auftauchenden Wörter in einer Tagcloud, 0 Text Analyse, 1 Hashtags
 def cloud(c, choise):
 	c.execute("""SELECT Text, Hashtags
-					FROM Twitter """)
+					FROM Twitter""")
+					
 	result = c.fetchall()
 	text = ""
 	for tweet in result:
 		text += str(tweet[choise].encode("utf-8"))+ " "
 	text = text.lower()
 	stopwords = set(STOPWORDS)
+	stopword_list_everytime =["https", "via", "amp", "co", "will", "de"]
 	stopword_list_news = ["https", "via","breaking", "com", "de", "news", "co", "amp", "new", "latest"]
 	stopword_list_german =["der", "die", "das", "diese", "jene", "und", "oder", "ja", "nein"]
-	stopword_list_trump =["trump", "obama", "donald", "realdonaldtrump", "Trump'", "Trump's", "president"]
-	
-	"""for s in stopword_list_news:
-		stopwords.add(s)"""
+	stopword_list_trump =["trump","us", "obama", "donald", "realdonaldtrump", "Trump'", "Trump's", "president"]
+	stopword_list_got = ["https", "co", "game", "of", "thrones", "hbo", "de", "got", "gameofthrones", "episode", "via", "thrones'", "season"]
+	for s in stopword_list_news:
+		stopwords.add(s)
 		
 	"""for s in stopword_list_german:
 		stopwords.add(s)"""
 		
 	"""for s in stopword_list_trump:
-		stopwords.add(s)"""	
+		stopwords.add(s)"""
 		
+	"""for s in stopword_list_got:
+		stopwords.add(s)"""
+		
+	for s in stopword_list_everytime:
+		stopwords.add(s)
+				
 	wordcloud = WordCloud(max_font_size=100, stopwords=stopwords).generate(text)
 	
 	
@@ -67,7 +74,7 @@ def language_analyse(c):
 	languages = []
 	counts = []
 	
-	for i in range (0,10):
+	for i in range (0,5):
 		counts.append(result[i][0])
 		languages.append(result[i][1])
 	labels = languages
@@ -100,7 +107,7 @@ def most_answered_user(c):
 	c.execute("""	SELECT Count(*), AnswerToUser
 					FROM Twitter
 					GROUP BY AnswerToUser
-					HAVING AnswerToUser != "Null"
+					HAVING AnswerToUser != "Null" or AnswerToUser != "null"
 					ORDER BY Count(*) DESC""")
 	result = c.fetchall()
 	usernames = []
@@ -205,4 +212,4 @@ def sentiment (c):
 	for line in result:
 		print line
 		
-language_analyse(cursor)
+cloud(cursor, 0)

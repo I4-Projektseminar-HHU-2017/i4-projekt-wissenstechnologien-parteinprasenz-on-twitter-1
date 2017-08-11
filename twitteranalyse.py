@@ -9,7 +9,6 @@
 import tweepy 
 import sqlite3
 import re
-import sys
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 
@@ -17,12 +16,12 @@ from textblob.sentiments import NaiveBayesAnalyzer
 
 #Connects with the Database, if you haven't any database look at the SQLite 3 Tutorial how to create one using Python
 	
-conn = sqlite3.connect('Brexit.db')		
+conn = sqlite3.connect('GermanParties.db')		
 x = conn.cursor()
 
 
 
-# Go to http://dev.twitter.com and create an app. 
+# Go to http://dev.twitter.com and create an app 
 # The consumer key and secret as well as the access_token and secret will be generated for you after you register with Twitter Developers
 consumer_key = "dDg2wPt249fB87CI8SBDXOpet"
 consumer_secret =  "YaNJ4iRphKxke41VpohtzVCOr5C55ljYtEbF1vAF93f80thvsl"
@@ -37,12 +36,12 @@ api = tweepy.API(auth)
 
 class CustomStreamListener(tweepy.StreamListener):
     def __init__(self, api):
-				self.api = api
+				self.apiEnti = api
 				super(tweepy.StreamListener, self).__init__()
 				self.count = 0
 
         
-	#Where the Magic happens. Function that starts with every incomming tweet (status)
+	#Where the Magic happens. This Function is triggered every time a tweet (called status) appears.
     def on_status(self, status):
 			
 				if "RT @" not in status.text:
@@ -88,22 +87,24 @@ class CustomStreamListener(tweepy.StreamListener):
         print >> sys.stderr, 'Timeout...'
         return True
         
-#Initialise the Stream
 
-
-#Keywords that we want our stream filter for
-keyword_list_germanparties = ['CDU', 'CSU', 'SPD', 'FDP', 'Die Gruenen', 'Die Linke', 'AFD', 'NDP']
-keyword_list_news = ['news', 'breaking', 'eilmeldung']
-keyword_list_trump = ['trump', 'obama', 'potus', 'maga']
-keyword_list_brexit = ['brexit', 'theresa may']
-
-#Function that takes the keywords as a list and runs the stream
+#Starts the stream and catches possible exceptions that can occur on several tweets.
 def startstream(keywords):
-	sapi = tweepy.streaming.Stream(auth, CustomStreamListener(api))		
+	print "Connecting Stream"
+	sapi = tweepy.streaming.Stream(auth, CustomStreamListener(api))
+	print "Initialising Stream"	
 	while True:
 		try:
 			sapi.filter(track=keywords)
 		except:
 			continue
 
-startstream(keyword_list_brexit)
+
+#Some example keyword lists with topics of interest. Feel free to add any Keywords you like
+keyword_list_germanparties = ['CDU', 'CSU', 'SPD', 'FDP', 'Die Gruenen', 'Die Linke', 'AFD', 'NPD']
+keyword_list_news = ['news', 'breaking', 'eilmeldung']
+keyword_list_trump = ['trump', 'obama', 'potus', 'maga']
+keyword_list_brexit = ['brexit', 'theresa may']
+keyword_list_got = ["Gameofthrones", "Game of Thrones", "#got"]
+
+startstream(keyword_list_germanparties)
