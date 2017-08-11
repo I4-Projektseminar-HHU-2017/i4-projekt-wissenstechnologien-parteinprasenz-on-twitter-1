@@ -9,6 +9,7 @@ The first programm "Twitteranalyse" collects Tweets from any topic of interest a
 The second program "Datamining" offers various functions to analyze the collected Tweets, using SQLite statements, the matplotlib for some graphics and WordCloud for some TagClouds.
 
 Twitteranalyse
+
 At first some words to the inspiration for this program. 
 This Code is inspired by a Stackoverflow thread and the answer of User Balazs https://stackoverflow.com/questions/37398609/save-data-to-sqlite-from-tweepy
 
@@ -71,6 +72,8 @@ Like in twitteranalyse connect to the database of your interest.
  - most_answered_user: Displays the distribution of the top 10 most answered users by tweets from the database in a pie chart.
  
  - most_common_hashtags: Prints a list of the top 50 most common hashtags 
+ 
+ - most_frequent_user: Prints a list of the top 10 most frequent users in the database
  
  - most_mentioned_user: Displays the distribution of the top 10 most mentioned users by tweets from the database in a pie chart.
  

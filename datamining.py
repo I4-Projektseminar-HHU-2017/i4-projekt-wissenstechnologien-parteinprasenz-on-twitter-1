@@ -16,10 +16,10 @@ from nltk.tokenize import RegexpTokenizer
 connection = sqlite3.connect("News.db")
 cursor = connection.cursor()
 
-consumer_key = "Insert Consumer Key"
-consumer_secret =  "Insert Consumer Secret"
-access_token = "Inser Access Token"
-access_token_secret = "Insert Access Token Secret"
+consumer_key = "dDg2wPt249fB87CI8SBDXOpet"
+consumer_secret =  "YaNJ4iRphKxke41VpohtzVCOr5C55ljYtEbF1vAF93f80thvsl"
+access_token = "2859636691-JyxcWeoUrjZc26L1tRL6QQquijNaLDgQ0Wfm0Jt"
+access_token_secret = "ZXpYWICZrKZHIs1dBZboZrdBmMSrla0bxqaJRV0X79xj0"
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -170,10 +170,9 @@ def most_frequent_user(c):
 	user = []
 	
 	for l in result:
-		counts.append(l[0])
-		user.append(api.get_user(l[1]).screen_name)
+		print l[0]
+		print api.get_user(l[1]).screen_name
 		
-	
 #Die am häufigsten erwähnten Nutzer		
 def most_mentioned_user(c):
 	c.execute("""	SELECT Mentions
@@ -215,4 +214,4 @@ def sentiment (c):
 	for line in result:
 		print line
 		
-cloud(cursor, 0)
+most_frequent_user(cursor)
